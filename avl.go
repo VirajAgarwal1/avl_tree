@@ -159,31 +159,37 @@ func find_leftmost(node *Node) int {
 	return find_leftmost(node.left)
 }
 
-func delete_helper(node, parent *Node, x int) *Node {
+func Delete(node, parent *Node, x int) *Node {
 
 	var returned_node *Node
+
+	// fmt.Printf("\tDELETE Func(%v, %v, %v)\n", node, parent, x)
 
 	if node == nil {
 		return nil
 	}
 	if node.val < x {
-		returned_node = delete_helper(node.right, node, x)
+		returned_node = Delete(node.right, node, x)
 		if returned_node != nil {
 			node.right_h = 1 + max(returned_node.left_h, returned_node.right_h)
 		} else {
 			node.right_h = 0
 		}
-		check_balance(returned_node, node)
+		// fmt.Printf("\t\tCHECKING = %v, %v\n", returned_node, node)
+		check_balance(node, parent)
+		// fmt.Printf("\tRETURN = %v\n", node)
 		return node
 	}
 	if node.val > x {
-		returned_node = delete_helper(node.left, node, x)
+		returned_node = Delete(node.left, node, x)
 		if returned_node != nil {
 			node.left_h = 1 + max(returned_node.left_h, returned_node.right_h)
 		} else {
 			node.left_h = 0
 		}
-		check_balance(returned_node, node)
+		// fmt.Printf("\t\tCHECKING = %v, %v\n", returned_node, node)
+		check_balance(node, parent)
+		// fmt.Printf("\tRETURN = %v\n", node)
 		return node
 	}
 
@@ -203,35 +209,20 @@ func delete_helper(node, parent *Node, x int) *Node {
 				parent.right_h = 0
 			}
 		}
+		// fmt.Printf("\tRETURN = %v\n", node.left)
 		return node.left
 	} else {
 		l_most_val := find_leftmost(node.right)
 		node.val = l_most_val
-		returned_node = delete_helper(node.right, node, l_most_val)
+		returned_node = Delete(node.right, node, l_most_val)
 		if returned_node != nil {
 			node.right_h = 1 + max(returned_node.left_h, returned_node.right_h)
 		} else {
 			node.right_h = 0
 		}
-		check_balance(returned_node, node)
+		// fmt.Printf("\t\tCHECKING = %v, %v\n", returned_node, node)
+		check_balance(node, parent)
+		// fmt.Printf("\tRETURN = %v\n", node)
 		return node
 	}
-}
-
-func Delete(node, parent *Node, x int) {
-	returned_node := delete_helper(node, parent, x)
-	if parent.left == node {
-		if returned_node != nil {
-			parent.left_h = 1 + max(returned_node.left_h, returned_node.right_h)
-		} else {
-			parent.left_h = 0
-		}
-	} else {
-		if returned_node != nil {
-			parent.right_h = 1 + max(returned_node.left_h, returned_node.right_h)
-		} else {
-			parent.right_h = 0
-		}
-	}
-	check_balance(returned_node, parent)
 }
